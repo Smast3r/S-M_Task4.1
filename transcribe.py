@@ -112,6 +112,7 @@ def on_message(self, msg):
     off for later.
     """
     global LAST
+    global TRYING
     data = json.loads(msg)
     if "results" in data:
         if data["results"][0]["final"]:
@@ -120,7 +121,9 @@ def on_message(self, msg):
         else:
             LAST = data
         # This prints out the current fragment that we are working on
+        TRYING = data['results'][0]['alternatives'][0]['transcript']
         print(data['results'][0]['alternatives'][0]['transcript'])
+
 
 
 def on_error(self, error):
@@ -198,7 +201,6 @@ def main():
     headers["Authorization"] = "Basic " + base64.b64encode(
         userpass.encode()).decode()
     url = get_url()
-
     # If you really want to see everything going across the wire,
     # uncomment this. However realize the trace is going to also do
     # things like dump the binary sound packets in text in the
@@ -215,7 +217,15 @@ def main():
     # This gives control over the WebSocketApp. This is a blocking
     # call, so it won't return until the ws.close() gets called (after
     # 6 seconds in the dedicated thread).
+
     ws.run_forever()
+    # last message that comes will be saved into the ( TRYING ) variable. And I should SAVE it into FILE.text
+    f = open("results.txt", "w")
+    f.write(TRYING)
+    f.close()
+
+
+
 
 
 if __name__ == "__main__":
